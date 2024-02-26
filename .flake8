@@ -4,8 +4,7 @@ extend-ignore = E731
 
 exclude =
   __pycache__,
-  .git,
-  tests/coverage
+  .git,coverage
 max-complexity = 10
 max-line-length = 88
 per-file-ignores =

@@ -20,12 +20,6 @@ tasks:
     cmds:
       - "{{.VENV}}/black {{.ALL}}"
 
-  # Task to open the latest coverage report in a web browser
-  coverage:
-    desc: "Open the latest coverage report in a web browser"
-    cmds:
-      - open tests/coverage/index.html
-
   # Task to lint Python code with Flake8
   flake8:
     desc: "Lint Python code with Flake8"
@@ -68,11 +62,11 @@ tasks:
       - test
       - lint
 
-  # Task to run tests using pytest with coverage reporting
+  # Task to run tests using pytest
   test:
-    desc: "Run tests with coverage"
+    desc: "Run tests"
     cmds:
-      - pytest -vv --cov --cov-report=html:tests/coverage --cov-fail-under=95 $(if [ -n "{{.CLI_ARGS}}" ]; then echo "{{.CLI_ARGS}}"; else echo .; fi)
+      - ./manage.py test
 
   # This file is meant for local development mode only, so there is only one 'run'
   run:

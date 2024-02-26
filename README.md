@@ -85,6 +85,12 @@ The following Task command will show you a list of code quality commands you can
 task
 ```
 
+One of the tasks is a sample unit test suite, just as illustration
+
+```
+task test
+```
+
 ## Other assets
 
 There is a scripts folder with some test csv data and a quick script to generate more.
