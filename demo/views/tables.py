@@ -1,13 +1,15 @@
 import logging
 import django_tables2 as tables
 from django.utils.html import format_html
-from .models import Fund
+from ..models import Fund
 
 
 logger = logging.getLogger(__name__)
 
 
 class CurrencyColumn(tables.Column):
+    """Formats the Currency as $2.3M."""
+
     def render(self, value):
         try:
             value_in_millions = f"${value / 1_000_000:.1f}M"
@@ -18,6 +20,8 @@ class CurrencyColumn(tables.Column):
 
 
 class FundsTable(tables.Table):
+    """Used to display the funds, with pagination."""
+
     aum_usd = CurrencyColumn(verbose_name="AUM (USD)")
     inception_date = tables.DateColumn(format="Y-m-d")
 

@@ -1,11 +1,12 @@
 import logging
+from typing import Any
 from django.shortcuts import render
 from demo.models import STRATEGY_CHOICES, Fund
 from demo.services import process_uploaded_file
 from ..forms import UploadFileForm
 from django.http import HttpRequest
 from django.http.response import HttpResponse
-from ..tables import FundsTable
+from .tables import FundsTable
 from django_tables2 import RequestConfig
 from django.views.generic import View
 from django.shortcuts import render
@@ -13,13 +14,14 @@ from django.http import HttpRequest, HttpResponse
 from django_tables2 import RequestConfig
 from ..forms import UploadFileForm
 from ..models import Fund, STRATEGY_CHOICES
-from ..tables import FundsTable
+from .tables import FundsTable
 from ..services import process_uploaded_file
 
 logger = logging.getLogger(__name__)
 
 
-def get_form_errors(form):
+def get_form_errors(form: UploadFileForm) -> str:
+    """Iterate through the errors in the form and return a string."""
     error_messages = []
     for _, errors in form.errors.items():
         for error in errors:
@@ -33,10 +35,13 @@ def get_form_errors(form):
 
 
 class HomeView(View):
+    """The main view for the web, which allows uploading a csv file."""
+
     template_name = "demo/home.html"
     form_class = UploadFileForm
 
-    def get_context(self, request: HttpRequest, form=None):
+    def get_context(self, request: HttpRequest, form=None) -> dict[str, Any]:
+        """Fetch data used for the response."""
         strategy_filter = request.GET.get("strategy_filter", None)
         if strategy_filter:
             queryset = Fund.objects.filter(active=True, strategy=strategy_filter)
@@ -58,10 +63,12 @@ class HomeView(View):
         }
 
     def get(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
+        """Handle get requests."""
         context = self.get_context(request)
         return render(request, self.template_name, context)
 
     def post(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
+        """Handle file upload."""
         form = self.form_class(request.POST, request.FILES)
         context = self.get_context(request, form)
         if form.is_valid():

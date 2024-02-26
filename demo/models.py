@@ -8,6 +8,13 @@ STRATEGY_CHOICES = [
 
 
 class Fund(models.Model):
+    """A single Fund.
+
+    Note that there may be several rows with the same name in the DB,
+    but only one would be active. (This is the intention, but due to
+    time constraint it is neither validated nor enforced).
+    """
+
     name = models.CharField(max_length=255)
     strategy = models.CharField(max_length=64, choices=STRATEGY_CHOICES, db_index=True)
     aum_usd = models.DecimalField(
