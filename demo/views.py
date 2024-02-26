@@ -13,10 +13,6 @@ from rest_framework.generics import RetrieveAPIView
 
 
 def home(request: HttpRequest) -> HttpResponse:
-    return render(request, "demo/upload.html")
-
-
-def upload_file(request: HttpRequest) -> HttpResponse:
     context = {
         "form": UploadFileForm(),
         "error": None,
@@ -49,7 +45,7 @@ def upload_file(request: HttpRequest) -> HttpResponse:
     RequestConfig(request).configure(table)
 
     context["table"] = table
-    return render(request, "demo/upload.html", context)
+    return render(request, "demo/home.html", context)
 
 
 class ActiveFundList(ListAPIView):
