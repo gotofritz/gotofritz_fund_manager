@@ -12,11 +12,17 @@ A simple [Django](https://www.djangoproject.com/) application to manage funds im
 
 ## Description
 
-This app consists of a single page at the root, which in local mode would be accessed at <http://127.0.0.1:8000/>. The admin app is site is disabled for security reasons. There you will be able to:
+This app consists of a single page at the root, which in local mode would be accessed at <http://127.0.0.1:8000/>. There you will be able to:
 
 - view a list of funds
 - filter the list of fund by Strategy
-- replace the list with a new one by uploading a csv file with fields in the format `Name,Strategy,AUM (USD),Inception Date`
+- replace the list with a new one by uploading a csv file with fields in the format `Name,Strategy,AUM (USD),Inception Date`. Uploading is open without needing to authenticate.
+
+The application offers an (unsecured) API endpoint for querying to funds
+
+- <http://127.0.0.1:8000/api/funds/> will return a list of funds
+- <http://127.0.0.1:8000/api/funds/?strategy=__STRATEGY__> will filter the list by strategy, which can be one of "Arbitrage", "Global Macro", or "Long/Short Equity" (NOTE: in a real life scenario the strings would be replaced with shorter tokens)
+- <http://127.0.0.1:8000/api/fund/X/> will return detail of a single fund with id X
 
 ## Installation
 
@@ -57,7 +63,7 @@ To set up the app follow these steps:
 
 ## Tasks
 
-The project includes a set of tasks for the [Task](https://taskfile.dev/) task runner tool. They are defined in the [Taskfile](Taskfile.yml) and cover linting, testing, code formatting, and more. They are not a hard requirements, but they provide some useful shortcuts. See the Task documentation for [isntallation instructions](https://taskfile.dev/installation/)
+The project includes a set of tasks for the [Task](https://taskfile.dev/) task runner tool. They are defined in the [Taskfile](Taskfile.yml) and cover linting, testing, code formatting, and more. They are not a hard requirements, but they provide some useful shortcuts. See the Task documentation for [installation instructions](https://taskfile.dev/installation/)
 
 ## Usage
 
