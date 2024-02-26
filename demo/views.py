@@ -8,6 +8,7 @@ from django.http.response import HttpResponse
 from .tables import FundsTable
 from django_tables2 import RequestConfig
 from rest_framework.generics import ListAPIView
+from django_filters.rest_framework import DjangoFilterBackend
 
 
 def home(request: HttpRequest) -> HttpResponse:
@@ -51,5 +52,21 @@ def upload_file(request: HttpRequest) -> HttpResponse:
 
 
 class ActiveFundList(ListAPIView):
-    queryset = Fund.objects.filter(active=True)
+    """Service endpoint that lists all funds which are active."""
+
     serializer_class = FundSerializer
+    queryset = Fund.objects.filter(active=True)
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ["strategy"]
+
+    def get_queryset(self):
+        """
+        Restricts the returned funds to a given strategy.
+
+        Example: /api/funds/?strategy=Arbitrage
+        """
+        queryset = super().get_queryset()
+        strategy = self.request.query_params.get("strategy")
+        if strategy is not None:
+            queryset = queryset.filter(strategy=strategy)
+        return queryset
