@@ -14,6 +14,9 @@ def process_uploaded_file(f: UploadedFile) -> str | None:
     """Run simple validation on csv and update database.
 
     Rows are not overwritten, but simply disabled.
+
+    TODO: this is not hardened against attacks in any way, e.g. file
+    size, file type
     """
     try:
         text_file = TextIOWrapper(f.file, encoding="utf-8-sig")

@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -19,14 +20,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-h94)^is@x0v+58rp1a4hwo9ja$l@eg19h(8y&i3#v_hz5&f&h+"
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-ALLOWED_HOSTS: list[str] = []
-
+ALLOWED_HOSTS: list[str] = ["*"]
+SECRET_KEY = os.environ.setdefault(
+    "SECRET_KEY", "django-insecure-h94)^is@x0v+58rp1a4hwo9ja$l@eg19h(8y&i3#v_hz5&f&h+"
+)
+DEBUG = os.environ.setdefault("DEBUG", "False") == "True"
 
 # Application definition
 
@@ -151,4 +150,11 @@ LOGGING = {
 
 REST_FRAMEWORK = {
     "EXCEPTION_HANDLER": "demo.exceptions.custom_exception_handler",
+    "DEFAULT_THROTTLE_CLASSES": [
+        "rest_framework.throttling.UserRateThrottle",
+    ],
+    "DEFAULT_THROTTLE_RATES": {
+        "user": "100/day",
+    },
+    "DEFAULT_VERSIONING_CLASS": "rest_framework.versioning.URLPathVersioning",
 }
