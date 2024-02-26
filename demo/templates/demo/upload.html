@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load django_tables2 %}
+{% block title %}
+  Upload
+{% endblock title %}
+{% block css %}
+  <link rel="stylesheet" , href="{% static 'demo/css/stylesheet.css' %}" />
+{% endblock css %}
+{% block content %}
+  <div class="info block">
+    <h2>Upload list of funds</h2>
+    {% if error %}<div class="error">Error: {{ error }}</div>{% endif %}
+    {% if success %}<div class="success">File was successfully uploaded</div>{% endif %}
+    <p>Note:</p>
+    <ul>
+      <li>
+        The file should be a csv file with the fields: Name,Strategy,AUM
+        (USD),Inception Date
+      </li>
+      <li>The csv should have a header row</li>
+      <li>Dates should be in the format yyyy-mm-dd</li>
+      <li>
+        If the file uploaded is valid, this action will overwrite the
+        previous list and replace it with the new data
+      </li>
+    </ul>
+  </div>
+  <form method="post" enctype="multipart/form-data" class="block">
+    {% csrf_token %}
+    {# Given more time I would have used form|crispy with tailwind here #}
+    {{ form.as_p }}
+    <button type="submit">Upload</button>
+  </form>
+  <div class="funds block">
+    <form method="get" action="">
+      <select name="strategy_filter" onchange="this.form.submit()">
+        <option value="">All Strategies</option>
+        {% for value, name in strategies %}
+          <option value="{{ value }}"
+                  {% if request.GET.strategy_filter == value %}selected{% endif %}>{{ name }}</option>
+        {% endfor %}
+      </select>
+    </form>
+    {% render_table table %}
+    <div class="total">Total funds displayed: {{ funds_count }}</div>
+  </div>
+{% endblock content %}

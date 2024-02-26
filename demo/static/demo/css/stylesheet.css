@@ -1,0 +1,51 @@
+.error {
+  background-color: red;
+}
+
+.funds {
+  /* TODO: this is obviously not responsive */
+  width: 40rem;
+
+  & table {
+    border-collapse: collapse;
+    width: 100%;
+  }
+
+  & :is(td, th) {
+    border-spacing: 0;
+    border: 2px solid orange;
+    padding: 2px;
+  }
+}
+
+.info {
+  background-color: hsl(35, 61%, 84%);
+}
+
+.pagination {
+  list-style: none;
+  padding: 0;
+
+  .previous::before {
+    content: " << ";
+  }
+
+  .next::after {
+    content: " >> ";
+  }
+
+  li {
+    display: inline;
+    padding: 4px;
+  }
+  li:not(:last-of-type) {
+    border-right: 2px solid black;
+  }
+}
+.success {
+  background-color: hsl(144, 91%, 45%);
+}
+
+.total {
+  text-align: end;
+}
