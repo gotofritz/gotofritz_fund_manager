@@ -8,8 +8,11 @@ from datetime import datetime
 
 
 def process_uploaded_file(f: UploadedFile) -> str | None:
-    try:
+    """Run simple validation on csv and update database.
 
+    Rows are not overwritten, but simply disabled.
+    """
+    try:
         text_file = TextIOWrapper(f.file, encoding="utf-8-sig")
         reader = csv.DictReader(text_file)
         uploaded_names = set(

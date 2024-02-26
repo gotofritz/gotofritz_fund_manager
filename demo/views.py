@@ -10,42 +10,73 @@ from django_tables2 import RequestConfig
 from rest_framework.generics import ListAPIView
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.generics import RetrieveAPIView
+from django.views.generic import View
+from django.shortcuts import render
+from django.http import HttpRequest, HttpResponse
+from django_tables2 import RequestConfig
+from .forms import UploadFileForm
+from .models import Fund, STRATEGY_CHOICES
+from .tables import FundsTable
+from .services import process_uploaded_file
 
 
-def home(request: HttpRequest) -> HttpResponse:
-    context = {
-        "form": UploadFileForm(),
-        "error": None,
-        "success": False,
-        "funds": [],
-        "strategies": STRATEGY_CHOICES,
-        "funds_count": 0,
-    }
+def get_form_errors(form):
+    error_messages = []
+    for field, errors in form.errors.items():
+        for error in errors:
+            # Append each error message to the list
+            error_messages.append(str(error))
 
-    if request.method == "POST":
-        form = UploadFileForm(request.POST, request.FILES)
+    return (
+        f"<ul><li>{ '</li><li>'.join(error_messages) }</li></ul>"
+        if error_messages
+        else ""
+    )
+
+
+class HomeView(View):
+    template_name = "demo/home.html"
+    form_class = UploadFileForm
+
+    def get_context(self, request: HttpRequest, form=None):
+        strategy_filter = request.GET.get("strategy_filter", None)
+        if strategy_filter:
+            queryset = Fund.objects.filter(active=True, strategy=strategy_filter)
+        else:
+            queryset = Fund.objects.filter(active=True)
+
+        funds_count = queryset.count()
+        table = FundsTable(queryset)
+        RequestConfig(request).configure(table)
+
+        return {
+            "form": form if form is not None else self.form_class(),
+            "error": None,
+            "success": False,
+            "funds": [],
+            "strategies": STRATEGY_CHOICES,
+            "funds_count": funds_count,
+            "table": table,
+        }
+
+    def get(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
+        context = self.get_context(request)
+        return render(request, self.template_name, context)
+
+    def post(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
+        form = self.form_class(request.POST, request.FILES)
+        context = self.get_context(request, form)
         if form.is_valid():
             error = process_uploaded_file(request.FILES["file"])
-            if error:
-                context["error"] = error
-                context["form"] = form
-            else:
-                context["success"] = True
         else:
-            context["form"] = form
+            error = get_form_errors(form)
 
-    strategy_filter = request.GET.get("strategy_filter", None)
-    if strategy_filter:
-        queryset = Fund.objects.filter(active=True, strategy=strategy_filter)
-    else:
-        queryset = Fund.objects.filter(active=True)
-    context["funds_count"] = queryset.count()
-
-    table = FundsTable(queryset)
-    RequestConfig(request).configure(table)
-
-    context["table"] = table
-    return render(request, "demo/home.html", context)
+        context = self.get_context(request, form)
+        if error:
+            context["error"] = error
+        else:
+            context["success"] = True
+        return render(request, self.template_name, context)
 
 
 class ActiveFundList(ListAPIView):
