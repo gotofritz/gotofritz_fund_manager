@@ -15,6 +15,7 @@ class Fund(models.Model):
     )
     inception_date = models.DateField(null=True, blank=True)
     date_created = models.DateTimeField(auto_now_add=True)
+    # allows us to keep a history of past values
     active = models.BooleanField(default=True)
 
     def __str__(self):
