@@ -1,0 +1,90 @@
+# Taskfile for local development only.
+
+version: "3"
+
+vars:
+  ALL: gotofritz_fund_manager/
+  VENV: venv/bin
+  SOURCES: gotofritz_fund_manager/
+
+tasks:
+  # Task to run Bandit, a security linter for Python code
+  bandit:
+    desc: "Run Bandit for security linting"
+    cmds:
+      - "{{.VENV}}/bandit {{.SOURCES}}"
+
+  # Task to lint Python code with Black (code formatter)
+  black:
+    desc: "Lint Python code with Black"
+    cmds:
+      - "{{.VENV}}/black {{.ALL}}"
+
+  # Task to open the latest coverage report in a web browser
+  coverage:
+    desc: "Open the latest coverage report in a web browser"
+    cmds:
+      - open tests/coverage/index.html
+
+  # Task to lint Python code with Flake8
+  flake8:
+    desc: "Lint Python code with Flake8"
+    cmds:
+      - "{{.VENV}}/flake8 {{.ALL}}"
+
+  # Task to sort imports in Python code using isort
+  isort:
+    desc: "Sort imports"
+    cmds:
+      - "{{.VENV}}/isort {{.ALL}}"
+
+  # Task to lint HTML templates
+  djlint:
+    desc: "Lint and fixes HTML templates"
+    cmds:
+      - "{{.VENV}}/djlint . --reformat --format-css"
+
+  # Task to run all linting tasks (isort, black, mypy, flake8, bandit)
+  lint:
+    desc: "Run all linting tasks"
+    deps:
+      - isort
+      - black
+      - mypy
+      - flake8
+      - bandit
+      - djlint
+
+  # Task to run MyPy for static type checking on the source code
+  mypy:
+    desc: "Run MyPy for static type checking"
+    cmds:
+      - "{{.VENV}}/mypy {{.SOURCES}}"
+
+  # Task to run linting and tests
+  qa:
+    desc: "Run linting and tests"
+    deps:
+      - test
+      - lint
+
+  # Task to run tests using pytest with coverage reporting
+  test:
+    desc: "Run tests with coverage"
+    cmds:
+      - pytest -vv --cov --cov-report=html:tests/coverage --cov-fail-under=95 $(if [ -n "{{.CLI_ARGS}}" ]; then echo "{{.CLI_ARGS}}"; else echo .; fi)
+
+  # This file is meant for local development mode only, so there is only one 'run'
+  run:
+    desc: "Runs server with local settings"
+    env:
+      DJANGO_SETTINGS_MODULE: gotofritz_fund_manager.settings.local
+    cmds:
+      - ./manage.py runserver
+
+  # This file is meant for local development mode only, so there is only one 'run'
+  migrate:
+    desc: "Runs server migration locally"
+    cmds:
+      - ./manage.py makemigrations
+      - ./manage.py migrate

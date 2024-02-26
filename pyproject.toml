@@ -1,0 +1,16 @@
+[project]
+name = "gotofritz_fund_manager"
+version = "0.1.0"
+description = "Basic Django implementation of a fund management tool."
+requires-python = ">=3.11"
+
+
+[tool.black]
+# Black code formatter settings
+line-length = 88
+target-version = ['py311']
+include = '\.py?$'
+
+[tool.djlint]
+format_css=true
+indent=2
