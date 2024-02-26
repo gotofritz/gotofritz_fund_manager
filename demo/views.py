@@ -1,11 +1,13 @@
 from django.shortcuts import render
 from demo.models import STRATEGY_CHOICES, Fund
+from demo.serializers import FundSerializer
 from demo.services import process_uploaded_file
 from .forms import UploadFileForm
 from django.http import HttpRequest
 from django.http.response import HttpResponse
 from .tables import FundsTable
 from django_tables2 import RequestConfig
+from rest_framework.generics import ListAPIView
 
 
 def home(request: HttpRequest) -> HttpResponse:
@@ -46,3 +48,8 @@ def upload_file(request: HttpRequest) -> HttpResponse:
 
     context["table"] = table
     return render(request, "demo/upload.html", context)
+
+
+class ActiveFundList(ListAPIView):
+    queryset = Fund.objects.filter(active=True)
+    serializer_class = FundSerializer
