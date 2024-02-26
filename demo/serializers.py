@@ -6,4 +6,4 @@ from .models import Fund
 class FundSerializer(serializers.ModelSerializer):
     class Meta:
         model = Fund
-        fields = ["name", "strategy", "aum_usd", "inception_date"]
+        fields = ["id", "name", "strategy", "aum_usd", "inception_date"]

@@ -9,6 +9,7 @@ from .tables import FundsTable
 from django_tables2 import RequestConfig
 from rest_framework.generics import ListAPIView
 from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.generics import RetrieveAPIView
 
 
 def home(request: HttpRequest) -> HttpResponse:
@@ -70,3 +71,10 @@ class ActiveFundList(ListAPIView):
         if strategy is not None:
             queryset = queryset.filter(strategy=strategy)
         return queryset
+
+
+class SingleFund(RetrieveAPIView):
+    """Service endpoint that lists a single fund by ID."""
+
+    queryset = Fund.objects.all()
+    serializer_class = FundSerializer
