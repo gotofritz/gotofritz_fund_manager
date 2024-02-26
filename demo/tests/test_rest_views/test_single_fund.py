@@ -24,3 +24,4 @@ class SingleFundTestCase(TestCase):
         client = APIClient()
         response = client.get("/api/fund/999/")
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(response.data["detail"], "Not found.")

@@ -148,3 +148,7 @@ LOGGING = {
         },
     },
 }
+
+REST_FRAMEWORK = {
+    "EXCEPTION_HANDLER": "demo.exceptions.custom_exception_handler",
+}
