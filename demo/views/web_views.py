@@ -1,3 +1,4 @@
+import logging
 from django.shortcuts import render
 from demo.models import STRATEGY_CHOICES, Fund
 from demo.services import process_uploaded_file
@@ -15,12 +16,13 @@ from ..models import Fund, STRATEGY_CHOICES
 from ..tables import FundsTable
 from ..services import process_uploaded_file
 
+logger = logging.getLogger(__name__)
+
 
 def get_form_errors(form):
     error_messages = []
-    for field, errors in form.errors.items():
+    for _, errors in form.errors.items():
         for error in errors:
-            # Append each error message to the list
             error_messages.append(str(error))
 
     return (
@@ -70,6 +72,7 @@ class HomeView(View):
         context = self.get_context(request, form)
         if error:
             context["error"] = error
+            logger.error(f"Errors uploading list of funds: {error}")
         else:
             context["success"] = True
         return render(request, self.template_name, context)

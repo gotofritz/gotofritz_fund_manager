@@ -1,6 +1,10 @@
+import logging
 import django_tables2 as tables
 from django.utils.html import format_html
 from .models import Fund
+
+
+logger = logging.getLogger(__name__)
 
 
 class CurrencyColumn(tables.Column):
@@ -8,7 +12,8 @@ class CurrencyColumn(tables.Column):
         try:
             value_in_millions = f"${value / 1_000_000:.1f}M"
             return format_html(value_in_millions)
-        except (ValueError, TypeError):
+        except (ValueError, TypeError) as e:
+            logger.error(f"AUM format in db invalid, {e}")
             return "Err"
 
 

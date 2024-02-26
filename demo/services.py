@@ -1,3 +1,4 @@
+import logging
 from .models import Fund
 from django.db import DataError, OperationalError, transaction
 from django.core.files.uploadedfile import UploadedFile
@@ -5,6 +6,8 @@ from io import TextIOWrapper
 import csv
 from decimal import Decimal
 from datetime import datetime
+
+logger = logging.getLogger(__name__)
 
 
 def process_uploaded_file(f: UploadedFile) -> str | None:
@@ -18,6 +21,10 @@ def process_uploaded_file(f: UploadedFile) -> str | None:
         uploaded_names = set(
             row["Name"].strip() for row in reader if row["Name"].strip()
         )
+
+        if not uploaded_names:
+            logger.error(f"Empty CSV file uploaded")
+            return "CSV file is empty"
 
         text_file.seek(0)
         next(reader)
@@ -53,12 +60,22 @@ def process_uploaded_file(f: UploadedFile) -> str | None:
                     aum_usd=aum_usd,
                     inception_date=inception_date,
                 )
+            logger.info(f"Updated {len(uploaded_names) } rows")
+
     except OperationalError as e:
-        return f"Couldn't access the database or table: {e}"
+        msg = f"Couldn't access the database or table: {e}"
+        logger.error(msg)
+        return msg
     except DataError as e:
         return f"CSV data was decoded, but it is not compatible with DB: {e}"
+        logger.error(msg)
+        return msg
     except csv.Error as e:
-        return f"Error processing CSV file: {e}"
+        msg = f"Error processing CSV file: {e}"
+        logger.error(msg)
+        return msg
     except Exception as e:
-        return str(e)
+        msg = f"There was an error: {str(e)}"
+        logger.error(msg)
+        return msg
     return None
